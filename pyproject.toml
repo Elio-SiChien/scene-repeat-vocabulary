@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scene-repeat-vocabulary"
+version = "0.1.0"
+description = "Turn personal vocabulary lists into scene-based repetition notes and local follow-along audio."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "SceneRepeat contributors" }]
+dependencies = []
+
+[project.optional-dependencies]
+tts = [
+  "kokoro-onnx>=0.6.1",
+  "soundfile>=0.13",
+  "onnxruntime>=1.20.1",
+]
+dev = [
+  "pytest>=8",
+]
+
+[project.scripts]
+scene-repeat = "scene_repeat.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
