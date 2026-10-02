@@ -1,66 +1,70 @@
 # SceneRepeat Vocabulary
 
-英语学习的本质是重复。
+> 英语不是收藏出来的，是重复出来的。  
+> 最好的重复，不是盯着单词表硬背，而是在真实生活场景里反复听、读、复述、使用。
 
-但很多人的重复是低效的：
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Local TTS](https://img.shields.io/badge/TTS-Kokoro%20Local-orange)
+![Obsidian Friendly](https://img.shields.io/badge/Obsidian-Friendly-7C3AED)
 
-1. 背的都是生僻词，平时生活中用不到。
-2. 收藏了很多生活常用词，但收藏之后就再也不看，重复记忆没有发生。
-3. 即使记住了单词，也不知道如何把它们组成句子，融入自己的生活；不会读，也不会用。
+SceneRepeat Vocabulary 是一个面向中文英语学习者的开源工具。它把你查过但不会的单词，自动整理成每天 20 个词左右的生活场景短文，并用本地 Kokoro TTS 生成跟读音频。
 
-SceneRepeat Vocabulary solves these problems by turning your personal vocabulary list into a repeatable cycle of life-scene shadowing audio.
+English subtitle: turn your personal vocabulary list into scene-based repetition notes and local follow-along audio.
 
-- Use the words you actually looked up, not somebody else's fixed word list.
-- Split them into daily review notes, usually 20 words per day.
-- Repeat the whole library for multiple rounds.
-- Avoid plain word-list audio. Each day becomes a small life-scene paragraph.
-- Generate local follow-along audio with Kokoro ONNX, no API key required.
-- Within each round, every word appears once and only once; across rounds, words repeat deliberately.
+## 它解决什么问题
 
-## Why This Exists
+很多人不是不努力，而是重复方式太低效。
 
-Vocabulary apps often stop at collection. You save a word, feel productive, and never meet it again.
+| 学习痛点 | 常见结果 | SceneRepeat 怎么解决 |
+|---|---|---|
+| 背的词太生僻 | 生活中用不上，很快忘 | 使用你自己查过、真正不会的词库 |
+| 收藏后不再看 | 生词本变成仓库，没有重复 | 自动生成每日计划，完整循环多轮 |
+| 会认不会用 | 不会造句，不会读，不敢说 | 生成生活场景短文和本地跟读音频 |
+| 音频只是单词表 | 听起来枯燥，无法迁移 | 每天都是一段可复述的真实场景 |
 
-This project turns collection into a loop:
+## 学习闭环
 
-```text
-personal words -> daily scene -> follow-along script -> local audio -> repeat -> retell
+```mermaid
+flowchart LR
+  A[你的生词本] --> B[按语义自由分组]
+  B --> C[每日生活场景短文]
+  C --> D[跟读稿]
+  D --> E[Kokoro 本地音频]
+  E --> F[听读复述]
+  F --> G[3 轮循环重复]
+  G --> B
 ```
 
-The goal is not just to remember a definition. The goal is to hear the word, say it, and place it inside a sentence you could imagine using.
+核心不是“多收藏几个单词”，而是把单词变成每天都会重新遇见的声音和场景。
 
-## Features
+## 和传统背词有什么不同
 
-- Markdown vocabulary input.
-- Obsidian-friendly output.
-- Scene-based daily review notes.
-- Local Kokoro TTS audio generation.
-- Configurable rounds and words per day.
-- Round-level no-duplicate guarantee.
-- No cloud API required.
+| 传统方式 | SceneRepeat |
+|---|---|
+| 背别人给你的固定单词表 | 使用你自己查过的词 |
+| 一个词一个中文释义 | 一个词进入一个生活场景 |
+| 收藏后靠自觉复习 | 自动生成每日循环 |
+| 音频只读单词 | 音频读场景、读句子、读跟读稿 |
+| 记住了也不会说 | 每天听、读、复述，把词放回语言里 |
 
-## Install
+## 适合谁
+
+- 中文英语学习者
+- 有自己的生词本、查词记录、有道词典导出词库的人
+- Obsidian 用户
+- 想练英语跟读、听力和口语复述的人
+- 不想把学习文本发给云端 API，希望本地生成音频的人
+
+## 快速开始
+
+安装项目：
 
 ```bash
 pip install -e .
 ```
 
-For local Kokoro TTS:
-
-```bash
-pip install -e ".[tts]"
-```
-
-Download Kokoro model files separately. They are not committed to this repository.
-
-- `kokoro-v1.0.onnx`
-- `voices-v1.0.bin`
-
-See [docs/kokoro-setup.md](docs/kokoro-setup.md).
-
-## Quick Start
-
-Generate review notes without audio:
+生成每日复习笔记，不生成音频：
 
 ```bash
 scene-repeat generate \
@@ -70,9 +74,11 @@ scene-repeat generate \
   --words-per-day 20
 ```
 
-Generate review notes and Kokoro audio:
+如果你已经准备好 Kokoro 模型，也可以直接生成本地音频：
 
 ```bash
+pip install -e ".[tts]"
+
 scene-repeat generate \
   --vocab ./examples/vocabulary_sample.md \
   --out ./review \
@@ -83,7 +89,16 @@ scene-repeat generate \
   --voices ./models/voices-v1.0.bin
 ```
 
-## Vocabulary Format
+Kokoro 模型文件需要你自行下载，不会提交到 GitHub：
+
+- `kokoro-v1.0.onnx`
+- `voices-v1.0.bin`
+
+配置说明见：[docs/kokoro-setup.md](docs/kokoro-setup.md)
+
+## 输入格式
+
+你可以用 Obsidian 风格的 Markdown 词条：
 
 ```md
 ## archive /ˈɑːr.kaɪv/
@@ -94,17 +109,19 @@ scene-repeat generate \
 - 来源：manual
 ```
 
-## Output
+也可以只写最少信息：
 
-Each day includes:
+```md
+## commute /kəˈmjuːt/
 
-- today's word list
-- a life-scene paragraph
-- a follow-along script
-- review checkboxes
-- an optional local audio file
+- 释义：通勤；上下班路程
+```
 
-Example:
+更多格式说明见：[docs/vocabulary-format.md](docs/vocabulary-format.md)
+
+## 输出长什么样
+
+生成结果是 Obsidian 友好的 Markdown：
 
 ```text
 review/
@@ -115,11 +132,54 @@ review/
     day-001.wav
 ```
 
-## Core Rule
+每天一篇笔记，包含：
 
-Do not generate plain word-list audio.
+- 今日词表
+- 生活场景短文
+- 跟读稿
+- 复习勾选
+- 可选本地音频
 
-Every review day should sound like a meaningful situation: office, commute, classroom, lab, home, shopping, travel, conversation, or another ordinary scene. The audio should help you repeat the words as language, not as isolated flashcards.
+示例文件：
+
+- [examples/vocabulary_sample.md](examples/vocabulary_sample.md)
+- [examples/Day 001.md](examples/Day%20001.md)
+- [examples/audio_sample.wav](examples/audio_sample.wav)
+
+## 一天的复习方式
+
+建议每天 5-10 分钟：
+
+1. 先听音频，不看词表。
+2. 看 Day 笔记，跟读一遍。
+3. 遮住中文释义，回忆每个词。
+4. 用自己的话复述今天的场景。
+
+重复不是机械刷次数，而是让同一个词在声音、句子、场景和表达里反复出现。
+
+## 核心规则
+
+> 不生成纯单词列表音频。
+
+每一天都应该像一个可以想象的生活片段：办公室、通勤、课堂、实验室、家庭、超市、旅行、朋友聊天、项目汇报。音频要帮助你把词当作语言来重复，而不是当作孤立卡片来背。
+
+## 文档
+
+- [Obsidian 工作流](docs/obsidian-workflow.md)
+- [Kokoro 本地 TTS 配置](docs/kokoro-setup.md)
+- [词库格式](docs/vocabulary-format.md)
+
+## 隐私与开源边界
+
+这个仓库只包含通用代码、示例词库和示例音频。
+
+不会提交：
+
+- 你的私人 Obsidian vault
+- 完整个人词库
+- Kokoro 模型文件
+- 批量生成的每日音频
+- `.venv/` 虚拟环境
 
 ## License
 
